@@ -1,0 +1,28 @@
+Project:
+de.maxvollmer.n26-coding-challenge
+
+Author:
+Max Vollmer
+
+Description:
+This is a Maven based Java web project providing a REST API that accepts "transactions" via a POST endpoint and outputs "statistics" via a GET endpoint. The data type accepted and returned is JSON.
+
+This project is the solution to a coding challenge that is part of a job application process. The file BackendChallenge_286.pdf describes the task in more detail.
+
+Both endpoints have a complexity of O(1).
+
+This is realized through storing data from transactions in a fixed size array, where the indices are a modulo of the timestamps. The precision of the current implementation is 1 second, meaning that depending on the time the statistics endpoint is called, output data contains transactions with a varying maximum age between under 59 and under 60 seconds. Increasing precision is possible, up to exact output, with the downside of a bigger array and a longer constant retrieval time for the statistics endpoint.
+
+With 1 second precision the statistics endpoint will run appr. 480 arithmetic operations in a worst case scenario, but never more.
+
+With millisecond precision the statistics endpoint will run appr. 480000 arithmetic operations in a worst case scenario, but never more.
+
+A worst case scenario is one where in the last 60 seconds at least one transaction occured per item in the array, e.g. 60 evenly distributed transactions for 1 second precision or 60000 evenly distributed transactions for millisecond precision. After that it doesn't matter if there are more transactions. A worst case scenario with 60 transactions will result in the same performance as one with a trillion transactions.*
+
+The transactions endpoint, which receives transactions via POST, always uses appr. 8 arithmetic operations. It's speed and performance is completely independent from how many transactions are being sent.*
+
+*Hardware, JVM and OS limitations still apply of course. Also a lot of transactions being sent at the same time (with timestamps close to each other) might slow the endpoint down due to synchronization. This effect can be reduced with higher precision and thus less chance of transactions colliding.
+
+Build and run:
+1. Run "mvn clean install"
+2. Deploy the generated war file on a web container of your choice, e.g. tomcat.
